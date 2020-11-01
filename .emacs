@@ -18,9 +18,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(blink-cursor-mode nil)
+ '(org-agenda-files
+   (quote
+    ("~/Zettelkasten/2020-10-28-1608 daring greatly.org")))
  '(package-selected-packages
    (quote
-    (helm-bibtex zetteldeft helm yasnippet-snippets yasnippet org-bullets deft use-package))))
+    (workgroups2 org-ref helm-bibtex zetteldeft helm yasnippet-snippets yasnippet org-bullets deft use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -111,17 +114,21 @@
 (global-set-key (kbd "C-c x") 'helm-bibtex)
 )
 
+(use-package org-ref
+  :config
+  (setq reftex-default-bibliography "~/Zettelkasten/bib.bib")
+  (setq org-ref-default-bibliography "~/Zettelkasten/bib.bib")
+)
+
 (global-visual-line-mode t)
 
 (setq org-startup-with-inline-images t)
 
-(setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
-      backup-by-copying t    ; Don't delink hardlinks
-      version-control t      ; Use version numbers on backups
-      delete-old-versions t  ; Automatically delete excess backups
-      kept-new-versions 20   ; how many of the newest versions to keep
-      kept-old-versions 5    ; and how many of the old
-      )
+(setq zetteldeft-home-id "2020-10-31-2007")
+
+(require 'workgroups2)
 
 (deft)
+
+(workgroups-mode 1)
 
