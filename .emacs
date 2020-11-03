@@ -23,13 +23,13 @@
     ("~/Zettelkasten/2020-10-28-1608 daring greatly.org")))
  '(package-selected-packages
    (quote
-    (workgroups2 org-ref helm-bibtex zetteldeft helm yasnippet-snippets yasnippet org-bullets deft use-package))))
+    (org-roam-bibtex sqlite3 org-roam workgroups2 org-ref helm-bibtex zetteldeft helm yasnippet-snippets yasnippet org-bullets deft use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Fira Mono" :foundry "CTDB" :slant normal :weight normal :height 181 :width normal)))))
+ '(default ((t (:family "Fira Mono" :foundry "CTDB" :slant normal :weight normal :height 163 :width normal)))))
 
 ;; deft
 
@@ -128,7 +128,55 @@
 
 (require 'workgroups2)
 
-(deft)
+(use-package org-roam
+  :config
+  (add-to-list 'exec-path "/usr/bin/sqlite3")
+  (setq org-roam-directory "~/org-roam")
+  (add-hook 'after-init-hook 'org-roam-mode)
+  (setq org-roam-buffer-position 'left)
+  (setq org-roam-capture-templates
+      '(("n" "normal" plain (function org-roam--capture-get-point)
+     "%?"
+     :file-name "%<%Y%m%d%H%M%S>-${slug}"
+     :head "#+title: ${title}\n"
+     :unnarrowed t)
+	("d" "diary" plain (function org-roam--capture-get-point)
+	   "%?"
+	   :file-name "org/private/%<%Y%m%d>-${slug}"
+	   :head "#+TITLE: ${title}\n#+CREATED_AT: %U\n#+ROAM_TAGS:"
+	   :unnarrowed t)
+      ("l" "literature" plain (function org-roam--capture-get-point)
+       "%?"
+       :file-name "%<%Y%m%d%H%M%S>-${slug}"
+     :head "#+title: ${title}\n#+ROAM_TAGS:"
+     :unnarrowed t)))
+  ;; :bind
+  ;; (:map org-roam-mode-map
+  ;; 	(("C-c r r" . org-roam)
+  ;; 	 ("C-c r f" . org-roam-find-file)
+  ;; 	 ("C-c r g" . org-roam-show-graph))
+  ;; 	:map org-mode-map
+  ;; 	(("C-c r i" . org-roam-insert)))
+  (global-set-key (kbd "C-c r r") 'org-roam)
+  (global-set-key (kbd "C-c r f") 'org-roam-find-file)
+  (global-set-key (kbd "C-c r g") 'org-roam-show-graph)
+  (global-set-key (kbd "C-c r i") 'org-roam-insert)
+(key-chord-define org-mode-map "[[" #'my/insert-roam-link)
 
-(workgroups-mode 1)
+(defun my/insert-roam-link ()
+    "Inserts an Org-roam link."
+    (interactive)
+    (insert "[[roam:]]")
+    (backward-char 2))
+  (setq org-roam-index-file "20201103210546-index.org")
+  ) 
+
+(use-package org-roam-bibtex
+  :after org-roam
+  :hook (org-roam-mode . org-roam-bibtex-mode)
+  :bind (:map org-mode-map
+         (("C-c n a" . orb-note-actions))))
+
+
+
 
